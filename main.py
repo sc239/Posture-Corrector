@@ -28,6 +28,15 @@ class App:
         )
         self.calibrate_button.place(x=750, y=200)
 
+        self.calibrate_button = get_button(
+            window=self.main_window,
+            text='Stop',
+            color="red",
+            fg="white",
+            command=self.stop
+        )
+        self.calibrate_button.place(x=750, y=300)
+
         # Webcam label for displaying frames
         self.webcam_label = get_img_label(self.main_window)
         self.webcam_label.place(x=10, y=0, width=700, height=500)
@@ -39,6 +48,7 @@ class App:
         self.calibrating = False
         self.is_calibrated = False
         self.num_frames = 0
+        self.stop_processing = False
 
         # Calibration data
         self.calib_angle_nose_left = []
@@ -58,11 +68,11 @@ class App:
         if ret:
             frame = cv2.flip(frame, 1)  # Flip the frame for mirrored effect
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
+            if not self.stop_processing:
             # Pose estimation using Mediapipe
-            result = pose.process(rgb_frame)
-            if result.pose_landmarks:
-                self.process_landmarks(frame, result.pose_landmarks)
+                result = pose.process(rgb_frame)
+                if result.pose_landmarks:
+                    self.process_landmarks(frame, result.pose_landmarks)
 
             # Convert image to Tkinter compatible format
             img_ = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -157,7 +167,19 @@ class App:
 
     def calibrate(self):
         # Start calibration
+        self.stop_processing = False
         self.calibrating = True
+        self.is_calibrated = False
+
+    def stop(self):
+        self.stop_processing = True
+        self.calibrating = False
+        self.is_calibrated = False
+        self.num_frames = 0
+        self.calib_angle_nose_left = []
+        self.calib_angle_nose_right = []
+        self.calib_angle_at_nose = []
+        self.calib_angle_eye = []
 
     def start(self):
         self.main_window.mainloop()
