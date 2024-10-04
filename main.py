@@ -17,17 +17,21 @@ class App:
     def __init__(self):
         self.main_window = tk.Tk(className="Pose Corrector")
         self.main_window.geometry("1200x520+350+100")
+        # add descriptive text
+        self.text_label = get_text_label(self.main_window, 'Make yourself comfortable!\nWhen ready press Start '
+                                                           'Calibration')
+        self.text_label.place(x=750, y=100)
 
         # Calibrate button
         self.calibrate_button = get_button(
             window=self.main_window,
-            text='Start calibration',
+            text='Start Calibration',
             color="green",
             fg="white",
             command=self.calibrate
         )
         self.calibrate_button.place(x=750, y=200)
-
+        # Stop button
         self.calibrate_button = get_button(
             window=self.main_window,
             text='Stop',
@@ -188,3 +192,5 @@ class App:
 if __name__ == '__main__':
     app = App()
     app.start()
+    app.cap.release()
+    cv2.destroyAllWindows()
